@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block login_content %}
+<div class="container-fluid vh-100 d-flex justify-content-center align-items-center" style="background: linear-gradient(135deg, #f7931a 0%, #d17508 100%);">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="card-body p-5 bg-white">
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-notes-medical fa-4x text-primary-accent mb-3"></i>
+                        <h2 class="fw-bold text-dark">Fundacredesa</h2>
+                        <p class="text-muted">Sistema de Gestión de Citas Médicas</p>
+                    </div>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} rounded-pill text-center py-2">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{{ url_for('auth.login') }}">
+                        <div class="mb-4">
+                            <label class="form-label text-muted fw-medium small">Usuario</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0 rounded-start-pill">
+                                    <i class="fa-solid fa-user text-muted"></i>
+                                </span>
+                                <input type="text" name="username" class="form-control bg-light border-start-0 rounded-end-pill" placeholder="Ingrese su usuario" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted fw-medium small">Contraseña</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-end-0 rounded-start-pill">
+                                    <i class="fa-solid fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" name="password" class="form-control bg-light border-start-0 rounded-end-pill" placeholder="Ingrese su contraseña" required>
+                            </div>
+                        </div>
+                        <div class="d-grid mt-5">
+                            <button type="submit" class="btn btn-primary-accent btn-lg rounded-pill fw-bold shadow-sm">
+                                Entrar al Sistema <i class="fa-solid fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-4 text-white opacity-75 small">
+                &copy; 2026 Fundacredesa. Todos los derechos reservados.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
