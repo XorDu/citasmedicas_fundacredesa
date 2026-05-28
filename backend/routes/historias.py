@@ -91,12 +91,46 @@ def edit(id):
     history = MedicalHistory.query.get_or_404(id)
     
     if request.method == 'POST':
+        # Collect dicts for JSON fields
+        habitos_toxicos = { h: request.form.get(f'tox_{h}', '') for h in ['Alcohol', 'Tabaco', 'Drogas', 'Infusiones', 'Actividad física'] }
+        habitos_fisiologicos = { h: request.form.get(f'fis_{h}', '') for h in ['Alimentación', 'Diuresis', 'Sueño', 'Alergias', 'Otros'] }
+        examen_fisico = { h: request.form.get(f'ef_{h}', '') for h in ['TA', 'FC', 'FR', 'Temperatura', 'Peso', 'Altura', 'IMC'] }
+        impresion_general = { h: request.form.get(f'ig_{h}', '') for h in ['Constitución', 'Facies', 'Actitud', 'Decúbito', 'Marcha'] }
+        piel_tejido = { h: request.form.get(f'pf_{h}', '') for h in ['Aspecto', 'Distribución pilosa', 'Lesiones', 'Faneras', 'Tejido celular subcutáneo'] }
+        respiratorio = { h: request.form.get(f'resp_{h}', '') for h in ['Inspección', 'Palpación', 'Percusión', 'Auscultación'] }
+        cardiovascular = { h: request.form.get(f'cardio_{h}', '') for h in ['Inspección', 'Palpación', 'Auscultación', 'Pulsos'] }
+        abdomen = { h: request.form.get(f'abdom_{h}', '') for h in ['Inspección', 'Palpación', 'Percusión', 'Auscultación'] }
+        neurologico = { h: request.form.get(f'neuro_{h}', '') for h in ['Glasgow', 'Motilidad Activa', 'Motilidad Pasiva', 'Motilidad Refleja', 'Pares Craneales', 'Sensibilidad'] }
+
+        history.relacion_laboral = request.form.get('relacion_laboral')
+        history.estado_civil = request.form.get('estado_civil')
+        history.ocupacion = request.form.get('ocupacion')
+        history.nacionalidad = request.form.get('nacionalidad')
+        history.tipo_sangre = request.form.get('tipo_sangre')
+        history.observaciones = request.form.get('observaciones')
         history.motivo_consulta = request.form.get('motivo_consulta')
         history.enfermedad_actual = request.form.get('enfermedad_actual')
+        history.antecedentes_personales = request.form.get('antecedentes_personales')
+        history.enfermedades_infancia = request.form.get('enfermedades_infancia')
+        history.antecedentes_familiares = request.form.get('antecedentes_familiares')
+        history.cirugias_hospitalizaciones = request.form.get('cirugias_hospitalizaciones')
         history.diagnostico = request.form.get('diagnostico')
+        history.examenes_complementarios = request.form.get('examenes_complementarios')
         history.tratamiento = request.form.get('tratamiento')
+        
+        # Assign JSON fields
+        history.habitos_toxicos = habitos_toxicos
+        history.habitos_fisiologicos = habitos_fisiologicos
+        history.examen_fisico = examen_fisico
+        history.impresion_general = impresion_general
+        history.piel_tejido = piel_tejido
+        history.respiratorio = respiratorio
+        history.cardiovascular = cardiovascular
+        history.abdomen = abdomen
+        history.neurologico = neurologico
+        
         db.session.commit()
-        flash('Historia médica actualizada.', 'success')
+        flash('Historia médica actualizada exitosamente.', 'success')
         return redirect(url_for('historias.view', id=history.id))
         
     return render_template('historias/edit.html', history=history)
@@ -105,10 +139,23 @@ def edit(id):
 @login_required
 def generate_pdf(id):
     history = MedicalHistory.query.get_or_404(id)
-    filename = f"historia_{history.patient.cedula}_{history.id}.pdf"
-    filepath = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'static', 'pdfs', filename)
     
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    generate_medical_history_pdf(history, filepath)
+    # Build a safe filename (cedula can be None for minors)
+    patient_identifier = history.patient.cedula if history.patient and history.patient.cedula else f"paciente_{history.patient_id}"
+    filename = f"historia_{patient_identifier}_{history.id}.pdf"
     
-    return send_file(filepath, as_attachment=True)
+    pdf_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'static', 'pdfs')
+    pdf_dir = os.path.abspath(pdf_dir)
+    os.makedirs(pdf_dir, exist_ok=True)
+    filepath = os.path.join(pdf_dir, filename)
+    
+    try:
+        generate_medical_history_pdf(history, filepath)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        flash(f'Error al generar el PDF: {str(e)}', 'danger')
+        return redirect(url_for('historias.view', id=history.id))
+    
+    return send_file(filepath, as_attachment=True, download_name=filename)
+
