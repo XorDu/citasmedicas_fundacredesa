@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid max-w-4xl mx-auto" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Detalles de Historia Médica #{{ history.id }}</h2>
+        <div>
+            <a href="{{ url_for('historias.generate_pdf', id=history.id) }}" class="btn btn-primary-accent rounded-pill me-2"><i class="fa-solid fa-file-pdf me-2"></i>Descargar PDF</a>
+            <a href="{{ url_for('historias.index') }}" class="btn btn-outline-secondary rounded-pill"><i class="fa-solid fa-arrow-left me-2"></i>Volver</a>
+        </div>
+    </div>
+
+    <div class="card glass-card border-0 mb-4">
+        <div class="card-header ui-block-header d-flex justify-content-between">
+            <span>Paciente: {{ history.patient.first_name }} {{ history.patient.last_name }}</span>
+            <span>Cédula: {{ history.patient.cedula }}</span>
+        </div>
+        <div class="card-body p-4">
+            
+            <h5 class="text-primary-accent border-bottom pb-2 mb-3"><i class="fa-solid fa-address-card me-2"></i> Información General</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4"><strong>Relación Laboral:</strong> <span class="text-muted">{{ history.relacion_laboral or 'N/A' }}</span></div>
+                <div class="col-md-4"><strong>Estado Civil:</strong> <span class="text-muted">{{ history.estado_civil or 'N/A' }}</span></div>
+                <div class="col-md-4"><strong>Ocupación:</strong> <span class="text-muted">{{ history.ocupacion or 'N/A' }}</span></div>
+                <div class="col-md-4"><strong>Nacionalidad:</strong> <span class="text-muted">{{ history.nacionalidad or 'N/A' }}</span></div>
+                <div class="col-md-4"><strong>Tipo de Sangre:</strong> <span class="text-muted">{{ history.tipo_sangre or 'N/A' }}</span></div>
+                <div class="col-md-4"><strong>Médico Tratante:</strong> <span class="text-muted">{{ history.doctor.full_name }}</span></div>
+            </div>
+
+            <h5 class="text-primary-accent border-bottom pb-2 mb-3"><i class="fa-solid fa-stethoscope me-2"></i> Consulta</h5>
+            <div class="mb-4">
+                <strong>Motivo de Consulta:</strong>
+                <p class="text-muted">{{ history.motivo_consulta or 'N/A' }}</p>
+                <strong>Enfermedad Actual:</strong>
+                <p class="text-muted">{{ history.enfermedad_actual or 'N/A' }}</p>
+            </div>
+
+            <h5 class="text-primary-accent border-bottom pb-2 mb-3"><i class="fa-solid fa-file-medical-o me-2"></i> Evaluación Final</h5>
+            <div class="mb-4">
+                <strong>Diagnóstico:</strong>
+                <p class="text-muted">{{ history.diagnostico or 'N/A' }}</p>
+                <strong>Tratamiento:</strong>
+                <p class="text-muted">{{ history.tratamiento or 'N/A' }}</p>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <a href="{{ url_for('historias.edit', id=history.id) }}" class="btn btn-outline-primary rounded-pill"><i class="fa-solid fa-pen me-2"></i>Editar Historia</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
