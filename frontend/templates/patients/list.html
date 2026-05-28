@@ -3,8 +3,18 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="fw-bold mb-0">Lista de Pacientes</h2>
+        <div class="col-12 d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0">Directorio de Pacientes</h2>
+                <p class="text-muted">Gestión de fichas y representantes</p>
+            </div>
+            <!-- Buscador -->
+            <form class="d-flex" method="GET" action="{{ url_for('patients.index') }}" style="width: 300px;">
+                <div class="input-group shadow-sm rounded-pill overflow-hidden">
+                    <input type="text" name="q" value="{{ query|default('') }}" class="form-control border-0 bg-white ps-4" placeholder="Buscar por cédula o nombre...">
+                    <button class="btn btn-primary-accent border-0 px-3" type="submit"><i class="fa-solid fa-search"></i></button>
+                </div>
+            </form>
         </div>
     </div>
 
