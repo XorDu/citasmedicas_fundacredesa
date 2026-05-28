@@ -23,7 +23,23 @@ def index():
 def create(patient_id):
     patient = Patient.query.get_or_404(patient_id)
     
+    # Calculate age
+    from datetime import date
+    today = date.today()
+    age = today.year - patient.birth_date.year - ((today.month, today.day) < (patient.birth_date.month, patient.birth_date.day)) if patient.birth_date else ''
+    
     if request.method == 'POST':
+        # Recolectar diccionarios para los campos JSON
+        habitos_toxicos = { h: request.form.get(f'tox_{h}', '') for h in ['Alcohol', 'Tabaco', 'Drogas', 'Infusiones', 'Actividad física'] }
+        habitos_fisiologicos = { h: request.form.get(f'fis_{h}', '') for h in ['Alimentación', 'Diuresis', 'Sueño', 'Alergias', 'Otros'] }
+        examen_fisico = { h: request.form.get(f'ef_{h}', '') for h in ['TA', 'FC', 'FR', 'Temperatura', 'Peso', 'Altura', 'IMC'] }
+        impresion_general = { h: request.form.get(f'ig_{h}', '') for h in ['Constitución', 'Facies', 'Actitud', 'Decúbito', 'Marcha'] }
+        piel_tejido = { h: request.form.get(f'pf_{h}', '') for h in ['Aspecto', 'Distribución pilosa', 'Lesiones', 'Faneras', 'Tejido celular subcutáneo'] }
+        respiratorio = { h: request.form.get(f'resp_{h}', '') for h in ['Inspección', 'Palpación', 'Percusión', 'Auscultación'] }
+        cardiovascular = { h: request.form.get(f'cardio_{h}', '') for h in ['Inspección', 'Palpación', 'Auscultación', 'Pulsos'] }
+        abdomen = { h: request.form.get(f'abdom_{h}', '') for h in ['Inspección', 'Palpación', 'Percusión', 'Auscultación'] }
+        neurologico = { h: request.form.get(f'neuro_{h}', '') for h in ['Glasgow', 'Motilidad Activa', 'Motilidad Pasiva', 'Motilidad Refleja', 'Pares Craneales', 'Sensibilidad'] }
+
         history = MedicalHistory(
             patient_id=patient.id,
             doctor_id=current_user.id if current_user.role == 'specialty' else request.form.get('doctor_id'),
@@ -41,11 +57,19 @@ def create(patient_id):
             cirugias_hospitalizaciones=request.form.get('cirugias_hospitalizaciones'),
             diagnostico=request.form.get('diagnostico'),
             examenes_complementarios=request.form.get('examenes_complementarios'),
-            tratamiento=request.form.get('tratamiento')
+            tratamiento=request.form.get('tratamiento'),
+            
+            # Asignando los JSONs
+            habitos_toxicos=habitos_toxicos,
+            habitos_fisiologicos=habitos_fisiologicos,
+            examen_fisico=examen_fisico,
+            impresion_general=impresion_general,
+            piel_tejido=piel_tejido,
+            respiratorio=respiratorio,
+            cardiovascular=cardiovascular,
+            abdomen=abdomen,
+            neurologico=neurologico
         )
-        
-        # Parse JSON fields from form (simplified for demo)
-        # habitos_toxicos = {"alcohol": request.form.get('alcohol'), ...}
         
         db.session.add(history)
         db.session.commit()
@@ -53,7 +77,7 @@ def create(patient_id):
         return redirect(url_for('historias.index'))
         
     medicos = User.query.filter_by(role='specialty').all()
-    return render_template('historias/create.html', patient=patient, medicos=medicos)
+    return render_template('historias/create.html', patient=patient, medicos=medicos, today_date=today.strftime('%Y-%m-%d'), age=age)
 
 @historias_bp.route('/view/<int:id>')
 @login_required
