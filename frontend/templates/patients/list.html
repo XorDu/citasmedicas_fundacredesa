@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold mb-0">Lista de Pacientes</h2>
+        </div>
+    </div>
+
+    <div class="card glass-card border-0 mb-4">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="text-muted">
+                        <tr>
+                            <th>Nombres y Apellidos</th>
+                            <th>Cédula</th>
+                            <th>Menor de Edad</th>
+                            <th>Representante</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in patients %}
+                        <tr>
+                            <td class="fw-medium">{{ p.first_name }} {{ p.last_name }}</td>
+                            <td>{{ p.cedula or 'N/A' }}</td>
+                            <td>
+                                {% if p.is_minor %}
+                                <span class="badge bg-warning text-dark rounded-pill">Sí</span>
+                                {% else %}
+                                <span class="badge bg-light text-dark rounded-pill border">No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.is_minor and p.representative %}
+                                    {{ p.representative.first_name }} {{ p.representative.last_name }} ({{ p.representative.cedula }})
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('historias.create', patient_id=p.id) }}" class="btn btn-sm btn-primary-accent rounded-pill">
+                                    <i class="fa-solid fa-notes-medical"></i> Crear Historia
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">No hay pacientes registrados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
