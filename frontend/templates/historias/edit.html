@@ -1,42 +1,265 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid max-w-4xl mx-auto" style="max-width: 900px;">
+<div class="container-fluid max-w-4xl mx-auto mb-5" style="max-width: 900px;">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold mb-0">Editar Historia Médica #{{ history.id }}</h2>
+        <h2 class="fw-bold mb-0 text-dark-accent">Editar Historia Médica #{{ history.id }}</h2>
         <a href="{{ url_for('historias.view', id=history.id) }}" class="btn btn-outline-secondary rounded-pill"><i class="fa-solid fa-arrow-left me-2"></i>Volver</a>
     </div>
 
-    <div class="card glass-card border-0 mb-4">
-        <div class="card-body p-4">
+    <div class="card glass-card border-0 mb-4 shadow-sm">
+        <div class="card-header ui-block-header bg-white border-bottom">
+            <h4 class="mb-0 text-center fw-bold">EDITAR HISTORIA MÉDICA</h4>
+        </div>
+        <div class="card-body p-4 p-md-5">
             <form method="POST">
                 
-                <h5 class="text-primary-accent border-bottom pb-2 mb-3"><i class="fa-solid fa-stethoscope me-2"></i> Consulta</h5>
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label text-muted small fw-medium">Motivo de Consulta</label>
-                        <textarea class="form-control" name="motivo_consulta" rows="3" required>{{ history.motivo_consulta }}</textarea>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label text-muted small fw-medium">Enfermedad Actual</label>
-                        <textarea class="form-control" name="enfermedad_actual" rows="3">{{ history.enfermedad_actual }}</textarea>
-                    </div>
-                </div>
-
-                <h5 class="text-primary-accent border-bottom pb-2 mb-3 mt-5"><i class="fa-solid fa-file-medical-o me-2"></i> Evaluación Final</h5>
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label text-muted small fw-medium">Diagnóstico</label>
-                        <textarea class="form-control" name="diagnostico" rows="3">{{ history.diagnostico }}</textarea>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label text-muted small fw-medium">Tratamiento</label>
-                        <textarea class="form-control" name="tratamiento" rows="3">{{ history.tratamiento }}</textarea>
+                <!-- Encabezado -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6 d-flex align-items-center">
+                        <label class="form-label me-3 mb-0 fw-bold">Relación laboral</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="relacion_laboral" id="rel_titular" value="Titular" {% if history.relacion_laboral == 'Titular' %}checked{% endif %}>
+                            <label class="form-check-label" for="rel_titular">Titular</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="relacion_laboral" id="rel_familiar" value="Familiar" {% if history.relacion_laboral == 'Familiar' %}checked{% endif %}>
+                            <label class="form-check-label" for="rel_familiar">Familiar</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="relacion_laboral" id="rel_otros" value="Otros" {% if history.relacion_laboral == 'Otros' %}checked{% endif %}>
+                            <label class="form-check-label" for="rel_otros">Otros</label>
+                        </div>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end mt-5">
-                    <button type="submit" class="btn btn-primary-accent px-5 rounded-pill shadow-sm">Guardar Cambios</button>
+                <div class="row g-2 mb-2 align-items-center">
+                    <div class="col-md-2 fw-bold">Fecha:</div>
+                    <div class="col-md-4"><input type="text" class="form-control form-control-sm" value="{{ history.created_at.strftime('%d/%m/%Y %I:%M %p') }}" disabled></div>
+                    <div class="col-md-2 fw-bold">N° cédula:</div>
+                    <div class="col-md-4"><input type="text" class="form-control form-control-sm" value="{{ history.patient.cedula or 'N/A' }}" disabled></div>
+                </div>
+
+                <div class="row g-2 mb-2 align-items-center">
+                    <div class="col-md-4 fw-bold">Nombre del paciente:</div>
+                    <div class="col-md-8"><input type="text" class="form-control form-control-sm" value="{{ history.patient.first_name }} {{ history.patient.last_name }}" disabled></div>
+                </div>
+
+                <div class="row g-2 mb-2 align-items-center">
+                    <div class="col-md-3 fw-bold">Fecha de nacimiento:</div>
+                    <div class="col-md-3"><input type="text" class="form-control form-control-sm" value="{{ history.patient.birth_date.strftime('%d/%m/%Y') if history.patient.birth_date else '' }}" disabled></div>
+                    <div class="col-md-2 fw-bold">Estado civil:</div>
+                    <div class="col-md-4"><input type="text" class="form-control form-control-sm border-primary" name="estado_civil" value="{{ history.estado_civil or '' }}"></div>
+                </div>
+
+                <div class="row g-2 mb-2 align-items-center">
+                    <div class="col-md-3 fw-bold">Ocupación:</div>
+                    <div class="col-md-9"><input type="text" class="form-control form-control-sm border-primary" name="ocupacion" value="{{ history.ocupacion or '' }}"></div>
+                </div>
+
+                <div class="row g-2 mb-2 align-items-center">
+                    <div class="col-md-3 fw-bold">Nacionalidad:</div>
+                    <div class="col-md-9"><input type="text" class="form-control form-control-sm border-primary" name="nacionalidad" value="{{ history.nacionalidad or '' }}"></div>
+                </div>
+
+                <div class="row g-2 mb-2 align-items-center">
+                    <div class="col-md-3 fw-bold">Tipo de sangre:</div>
+                    <div class="col-md-9"><input type="text" class="form-control form-control-sm border-primary" name="tipo_sangre" value="{{ history.tipo_sangre or '' }}"></div>
+                </div>
+
+                <div class="mb-4 mt-3">
+                    <label class="fw-bold mb-1">Observaciones:</label>
+                    <input type="text" class="form-control border-primary" name="observaciones" value="{{ history.observaciones or '' }}">
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-1 fs-5">Motivo de consulta:</label>
+                    <textarea class="form-control border-primary" name="motivo_consulta" rows="3" required>{{ history.motivo_consulta or '' }}</textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-1 fs-5">Enfermedad actual:</label>
+                    <textarea class="form-control border-primary" name="enfermedad_actual" rows="3">{{ history.enfermedad_actual or '' }}</textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-1 fs-5">Antecedentes personales:</label>
+                    <textarea class="form-control border-primary" name="antecedentes_personales" rows="2">{{ history.antecedentes_personales or '' }}</textarea>
+                </div>
+
+                <!-- Hábitos -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Hábitos tóxicos</th>
+                                    <th class="text-center">Positivo</th>
+                                    <th class="text-center">Negativo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for habito in ['Alcohol', 'Tabaco', 'Drogas', 'Infusiones', 'Actividad física'] %}
+                                <tr>
+                                    <td>{{ habito }}:</td>
+                                    <td class="text-center">
+                                        <input class="form-check-input" type="radio" name="tox_{{ habito }}" value="Positivo" 
+                                               {% if history.habitos_toxicos and history.habitos_toxicos.get(habito) == 'Positivo' %}checked{% endif %}>
+                                    </td>
+                                    <td class="text-center">
+                                        <input class="form-check-input" type="radio" name="tox_{{ habito }}" value="Negativo" 
+                                               {% if history.habitos_toxicos and history.habitos_toxicos.get(habito) == 'Negativo' %}checked{% endif %}>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Hábitos fisiológicos</th>
+                                    <th class="text-center">Positivo</th>
+                                    <th class="text-center">Negativo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for habito in ['Alimentación', 'Diuresis', 'Sueño', 'Alergias', 'Otros'] %}
+                                <tr>
+                                    <td>{{ habito }}:</td>
+                                    <td class="text-center">
+                                        <input class="form-check-input" type="radio" name="fis_{{ habito }}" value="Positivo" 
+                                               {% if history.habitos_fisiologicos and history.habitos_fisiologicos.get(habito) == 'Positivo' %}checked{% endif %}>
+                                    </td>
+                                    <td class="text-center">
+                                        <input class="form-check-input" type="radio" name="fis_{{ habito }}" value="Negativo" 
+                                               {% if history.habitos_fisiologicos and history.habitos_fisiologicos.get(habito) == 'Negativo' %}checked{% endif %}>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-1 fs-5">Enfermedades de la infancia:</label>
+                    <textarea class="form-control border-primary" name="enfermedades_infancia" rows="2">{{ history.enfermedades_infancia or '' }}</textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-1 fs-5">Antecedentes familiares:</label>
+                    <textarea class="form-control border-primary" name="antecedentes_familiares" rows="2">{{ history.antecedentes_familiares or '' }}</textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold mb-1 fs-5">Cirugías y hospitalizaciones:</label>
+                    <textarea class="form-control border-primary" name="cirugias_hospitalizaciones" rows="2">{{ history.cirugias_hospitalizaciones or '' }}</textarea>
+                </div>
+
+                <!-- Examen Físico -->
+                <h5 class="fw-bold mt-5 mb-3 fs-5 bg-light p-2 border-start border-4 border-warning">Examen físico:</h5>
+                <div class="row g-3 mb-4">
+                    {% for ef in ['TA', 'FC', 'FR', 'Temperatura', 'Peso', 'Altura', 'IMC'] %}
+                    <div class="col-md-4 col-sm-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white fw-medium w-50">{{ ef }}:</span>
+                            <input type="text" class="form-control border-primary" name="ef_{{ ef }}" 
+                                   value="{{ history.examen_fisico.get(ef, '') if history.examen_fisico else '' }}">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <h6 class="fw-bold mb-2">Impresión general:</h6>
+                <div class="row g-2 mb-4">
+                    {% for ig in ['Constitución', 'Facies', 'Actitud', 'Decúbito', 'Marcha'] %}
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white w-25">{{ ig }}:</span>
+                            <input type="text" class="form-control border-primary" name="ig_{{ ig }}" 
+                                   value="{{ history.impresion_general.get(ig, '') if history.impresion_general else '' }}">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <h6 class="fw-bold mb-2">Piel, faneras y tejido celular subcutáneo:</h6>
+                <div class="row g-2 mb-4">
+                    {% for pf in ['Aspecto', 'Distribución pilosa', 'Lesiones', 'Faneras', 'Tejido celular subcutáneo'] %}
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white" style="width: 40%;">{{ pf }}:</span>
+                            <input type="text" class="form-control border-primary" name="pf_{{ pf }}" 
+                                   value="{{ history.piel_tejido.get(pf, '') if history.piel_tejido else '' }}">
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Sistemas -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-2">Respiratorio:</h6>
+                        {% for item in ['Inspección', 'Palpación', 'Percusión', 'Auscultación'] %}
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text bg-white w-25">{{ item }}:</span>
+                            <input type="text" class="form-control border-primary" name="resp_{{ item }}" 
+                                   value="{{ history.respiratorio.get(item, '') if history.respiratorio else '' }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-2">Cardiovascular:</h6>
+                        {% for item in ['Inspección', 'Palpación', 'Auscultación', 'Pulsos'] %}
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text bg-white w-25">{{ item }}:</span>
+                            <input type="text" class="form-control border-primary" name="cardio_{{ item }}" 
+                                   value="{{ history.cardiovascular.get(item, '') if history.cardiovascular else '' }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-2">Abdomen:</h6>
+                        {% for item in ['Inspección', 'Palpación', 'Percusión', 'Auscultación'] %}
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text bg-white w-25">{{ item }}:</span>
+                            <input type="text" class="form-control border-primary" name="abdom_{{ item }}" 
+                                   value="{{ history.abdomen.get(item, '') if history.abdomen else '' }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-2">Neurológico:</h6>
+                        {% for item in ['Glasgow', 'Motilidad Activa', 'Motilidad Pasiva', 'Motilidad Refleja', 'Pares Craneales', 'Sensibilidad'] %}
+                        <div class="input-group input-group-sm mb-1">
+                            <span class="input-group-text bg-white w-50">{{ item }}:</span>
+                            <input type="text" class="form-control border-primary" name="neuro_{{ item }}" 
+                                   value="{{ history.neurologico.get(item, '') if history.neurologico else '' }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Final -->
+                <div class="mb-4">
+                    <label class="fw-bold mb-1 fs-5">Diagnóstico:</label>
+                    <textarea class="form-control border-primary" name="diagnostico" rows="3">{{ history.diagnostico or '' }}</textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-1 fs-5">Exámenes complementarios:</label>
+                    <textarea class="form-control border-primary" name="examenes_complementarios" rows="3">{{ history.examenes_complementarios or '' }}</textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-1 fs-5">Tratamiento:</label>
+                    <textarea class="form-control border-primary" name="tratamiento" rows="3">{{ history.tratamiento or '' }}</textarea>
+                </div>
+
+                <div class="d-flex justify-content-end mt-5 border-top pt-4">
+                    <button type="submit" class="btn btn-primary-accent btn-lg px-5 shadow">Guardar Cambios</button>
                 </div>
             </form>
         </div>
