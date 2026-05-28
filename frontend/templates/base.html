@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundacredesa - Sistema Médico</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FullCalendar CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <div class="wrapper d-flex">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="glass-sidebar">
+            <div class="sidebar-header">
+                <!-- Se asume que el usuario subirá el logo a static/img/logo.png -->
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Fundacredesa Logo" class="logo-img img-fluid" onerror="this.src='https://via.placeholder.com/150x80/e67e22/ffffff?text=Fundacredesa'">
+            </div>
+
+            <ul class="list-unstyled components">
+                <li class="{{ 'active' if request.endpoint == 'dashboard.index' else '' }}">
+                    <a href="{{ url_for('dashboard.index') }}">
+                        <i class="fa-solid fa-house me-2"></i> Inicio
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'calendar.index' else '' }}">
+                    <a href="{{ url_for('calendar.index') }}">
+                        <i class="fa-regular fa-calendar-days me-2"></i> Agenda
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'patients.index' else '' }}">
+                    <a href="{{ url_for('patients.index') }}">
+                        <i class="fa-solid fa-users me-2"></i> Pacientes
+                    </a>
+                </li>
+                <li class="{{ 'active' if request.endpoint == 'historias.index' else '' }}">
+                    <a href="{{ url_for('historias.index') }}">
+                        <i class="fa-solid fa-file-medical me-2"></i> Historias Clínicas
+                    </a>
+                </li>
+                {% if current_user.role == 'superadmin' %}
+                <li class="{{ 'active' if request.endpoint == 'admin.dashboard' else '' }}">
+                    <a href="{{ url_for('admin.dashboard') }}">
+                        <i class="fa-solid fa-gear me-2"></i> Configuración
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content" class="w-100 p-4">
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand-lg navbar-glass mb-4 rounded-4 px-4">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-primary-accent rounded-circle shadow-sm">
+                        <i class="fas fa-align-left"></i>
+                    </button>
+                    
+                    <div class="d-flex ms-auto align-items-center">
+                        <span class="me-3 fw-medium text-dark-accent">
+                            <i class="fa-solid fa-user-doctor me-1"></i> 
+                            {{ current_user.full_name }} ({{ current_user.role }})
+                        </span>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Salir
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Alerts -->
+            <div class="alerts-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Main Dynamic Content -->
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    {% else %}
+        {% block login_content %}{% endblock %}
+    {% endif %}
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
