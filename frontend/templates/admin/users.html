@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-0">Gestión de Usuarios</h2>
+        </div>
+    </div>
+
+    <!-- Lista de Usuarios -->
+    <div class="card glass-card border-0 mb-4">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="text-muted">
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Nombre Completo</th>
+                            <th>Especialidad</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td class="fw-medium">{{ u.username }}</td>
+                            <td>{{ u.full_name }}</td>
+                            <td><span class="badge" style="background-color: {{ u.specialty.color }}">{{ u.specialty.name }}</span></td>
+                            <td>
+                                {% if u.active %}
+                                    <span class="badge bg-success rounded-pill px-3">Activo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary rounded-pill px-3">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-circle me-1" 
+                                        onclick="openPasswordModal({{ u.id }}, '{{ u.username }}')" title="Cambiar Contraseña">
+                                    <i class="fa-solid fa-key"></i>
+                                </button>
+                                <form method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que desea eliminar este usuario?');">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="user_id" value="{{ u.id }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-card border-0">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold text-primary-accent"><i class="fa-solid fa-lock me-2"></i> Cambiar Contraseña</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-4">
+        <p class="text-muted small">Estableciendo nueva contraseña para el usuario: <strong id="modalUserName"></strong></p>
+        <form id="changePasswordForm">
+            <input type="hidden" id="modalUserId" name="user_id">
+            <div class="mb-4">
+                <label class="form-label fw-medium small">Nueva Contraseña</label>
+                <input type="password" class="form-control" id="newPassword" name="new_password" required minlength="6">
+            </div>
+            <div id="passwordAlert" class="alert d-none py-2 small" role="alert"></div>
+            <div class="d-grid">
+                <button type="button" class="btn btn-primary-accent rounded-pill shadow-sm" id="btnSavePassword">Guardar Contraseña</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let pwdModal;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        pwdModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        
+        document.getElementById('btnSavePassword').addEventListener('click', function() {
+            const userId = document.getElementById('modalUserId').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const alertBox = document.getElementById('passwordAlert');
+            
+            if(!newPassword || newPassword.length < 6) {
+                showAlert('danger', 'La contraseña debe tener al menos 6 caracteres.');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('new_password', newPassword);
+            
+            // Reemplazar URL con URL dinámica en una implementación real o usar fetch directo
+            fetch('{{ url_for("admin.change_password") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    showAlert('success', data.message);
+                    setTimeout(() => pwdModal.hide(), 1500);
+                } else {
+                    showAlert('danger', data.message);
+                }
+            })
+            .catch(err => {
+                showAlert('danger', 'Error al procesar la solicitud.');
+                console.error(err);
+            });
+        });
+    });
+    
+    function openPasswordModal(userId, username) {
+        document.getElementById('modalUserId').value = userId;
+        document.getElementById('modalUserName').innerText = username;
+        document.getElementById('newPassword').value = '';
+        document.getElementById('passwordAlert').classList.add('d-none');
+        pwdModal.show();
+    }
+    
+    function showAlert(type, message) {
+        const alertBox = document.getElementById('passwordAlert');
+        alertBox.className = `alert alert-${type} py-2 small`;
+        alertBox.innerText = message;
+        alertBox.classList.remove('d-none');
+    }
+</script>
+{% endblock %}
