@@ -34,11 +34,61 @@
         </div>
     </div>
 </div>
+
+<!-- Appointment Detail Modal -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-primary-accent"><i class="fa-regular fa-calendar-check me-2"></i> Detalle de la Cita</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-4">
+                <div class="mb-3">
+                    <label class="text-muted small fw-medium d-block">Paciente</label>
+                    <span id="apptPatient" class="fw-bold fs-5 text-dark"></span>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="text-muted small fw-medium d-block">Especialidad</label>
+                        <span id="apptSpecialty" class="badge text-white px-3 py-2"></span>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-muted small fw-medium d-block">Consultorio / Sala</label>
+                        <span id="apptRoom" class="fw-semibold text-dark"></span>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <label class="text-muted small fw-medium d-block">Fecha</label>
+                        <span id="apptDate" class="fw-semibold text-dark"></span>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-muted small fw-medium d-block">Hora</label>
+                        <span id="apptTime" class="fw-semibold text-dark"></span>
+                    </div>
+                </div>
+
+                <div id="deleteActionContainer" class="d-none border-top pt-3">
+                    <form id="deleteApptForm" method="POST" action="" onsubmit="return confirm('¿Está seguro de que desea cancelar esta cita? Esta acción no se puede deshacer.');">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-outline-danger rounded-pill">
+                                <i class="fa-solid fa-trash-can me-2"></i> Cancelar Cita
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        var appointmentModal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+        
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
@@ -53,16 +103,38 @@
             allDaySlot: false,
             events: '/api/events',
             eventClick: function(info) {
-                // Si tiene permisos, se podría abrir un modal para editar/eliminar.
-                // Por ahora solo mostramos info.
-                alert('Cita: ' + info.event.title + '\n' +
-                      'Especialidad: ' + info.event.extendedProps.specialty + '\n' +
-                      'Consultorio: ' + info.event.extendedProps.room);
+                // Populate details
+                document.getElementById('apptPatient').innerText = info.event.title;
+                
+                const specBadge = document.getElementById('apptSpecialty');
+                specBadge.innerText = info.event.extendedProps.specialty;
+                specBadge.style.backgroundColor = info.event.backgroundColor || '#e67e22';
+                
+                document.getElementById('apptRoom').innerText = info.event.extendedProps.room || 'No asignada';
+                
+                // Parse date & time
+                const startObj = info.event.start;
+                const formattedDate = startObj.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                const formattedTime = startObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                
+                document.getElementById('apptDate').innerText = formattedDate;
+                document.getElementById('apptTime').innerText = formattedTime;
+
+                // Handle delete permissions
+                const deleteContainer = document.getElementById('deleteActionContainer');
+                if (info.event.editable) {
+                    deleteContainer.classList.remove('d-none');
+                    document.getElementById('deleteApptForm').action = '/appointments/delete/' + info.event.id;
+                } else {
+                    deleteContainer.classList.add('d-none');
+                }
+
+                // Show modal
+                appointmentModal.show();
             },
             eventDidMount: function(info) {
-                // Si la cita no es editable (de otra especialidad), se puede opacar un poco
                 if (!info.event.editable) {
-                    info.el.style.opacity = '0.7';
+                    info.el.style.opacity = '0.85';
                 }
             }
         });
