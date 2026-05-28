@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid max-w-4xl mx-auto" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Crear Historia Médica</h2>
+        <a href="{{ url_for('patients.index') }}" class="btn btn-outline-secondary rounded-pill"><i class="fa-solid fa-arrow-left me-2"></i>Volver</a>
+    </div>
+
+    <div class="card glass-card border-0 mb-4">
+        <div class="card-header ui-block-header">
+            Datos del Paciente: {{ patient.first_name }} {{ patient.last_name }}
+        </div>
+        <div class="card-body p-4">
+            <form method="POST">
+                
+                {% if current_user.role == 'superadmin' %}
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-medium">Médico Tratante</label>
+                    <select class="form-select" name="doctor_id" required>
+                        {% for m in medicos %}
+                        <option value="{{ m.id }}">{{ m.full_name }} ({{ m.specialty.name }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+
+                <!-- Encabezado -->
+                <h5 class="text-primary-accent border-bottom pb-2 mb-3 mt-4"><i class="fa-solid fa-address-card me-2"></i> Información General</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-medium">Relación Laboral</label>
+                        <select class="form-select" name="relacion_laboral">
+                            <option value="Titular">Titular</option>
+                            <option value="Familiar">Familiar</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-medium">Estado Civil</label>
+                        <input type="text" class="form-control" name="estado_civil">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-medium">Ocupación</label>
+                        <input type="text" class="form-control" name="ocupacion">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-medium">Nacionalidad</label>
+                        <input type="text" class="form-control" name="nacionalidad">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-medium">Tipo de Sangre</label>
+                        <input type="text" class="form-control" name="tipo_sangre">
+                    </div>
+                </div>
+
+                <!-- Motivo y Enfermedad -->
+                <h5 class="text-primary-accent border-bottom pb-2 mb-3 mt-5"><i class="fa-solid fa-stethoscope me-2"></i> Consulta</h5>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-medium">Motivo de Consulta</label>
+                        <textarea class="form-control" name="motivo_consulta" rows="3" required></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-medium">Enfermedad Actual</label>
+                        <textarea class="form-control" name="enfermedad_actual" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Antecedentes -->
+                <h5 class="text-primary-accent border-bottom pb-2 mb-3 mt-5"><i class="fa-solid fa-clock-rotate-left me-2"></i> Antecedentes</h5>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-medium">Antecedentes Personales</label>
+                        <textarea class="form-control" name="antecedentes_personales" rows="2"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-medium">Enfermedades de la Infancia</label>
+                        <textarea class="form-control" name="enfermedades_infancia" rows="2"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-medium">Antecedentes Familiares</label>
+                        <textarea class="form-control" name="antecedentes_familiares" rows="2"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-medium">Cirugías y Hospitalizaciones</label>
+                        <textarea class="form-control" name="cirugias_hospitalizaciones" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <!-- Final -->
+                <h5 class="text-primary-accent border-bottom pb-2 mb-3 mt-5"><i class="fa-solid fa-file-medical-o me-2"></i> Evaluación Final</h5>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-medium">Diagnóstico</label>
+                        <textarea class="form-control" name="diagnostico" rows="3"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-medium">Exámenes Complementarios</label>
+                        <textarea class="form-control" name="examenes_complementarios" rows="2"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-medium">Tratamiento</label>
+                        <textarea class="form-control" name="tratamiento" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-5">
+                    <button type="submit" class="btn btn-primary-accent px-5 rounded-pill shadow-sm">Guardar Historia y Firmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
