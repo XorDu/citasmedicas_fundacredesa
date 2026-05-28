@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid max-w-4xl mx-auto" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0 text-dark-accent">Registrar Paciente</h2>
+        <a href="{{ url_for('patients.index') }}" class="btn btn-outline-secondary rounded-pill"><i class="fa-solid fa-arrow-left me-2"></i>Volver</a>
+    </div>
+
+    <div class="card glass-card border-0 mb-4 shadow">
+        <div class="card-body p-4 p-md-5">
+            <form method="POST" id="patientForm">
+                
+                <h5 class="fw-medium text-primary-accent mb-4 border-bottom pb-2">
+                    <i class="fa-solid fa-user-plus me-2"></i> Datos Personales
+                </h5>
+                
+                <!-- Menor de edad checkbox -->
+                <div class="mb-4">
+                    <div class="form-check form-switch form-switch-lg">
+                        <input class="form-check-input" type="checkbox" id="isMinorSwitch" name="is_minor" value="true">
+                        <label class="form-check-label fw-semibold ms-2" for="isMinorSwitch">El paciente es menor de edad sin cédula</label>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6" id="cedulaContainer">
+                        <label class="form-label text-muted small fw-medium">Cédula de Identidad</label>
+                        <input type="text" class="form-control" name="cedula" id="cedulaInput" placeholder="Ej: 12345678">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Género</label>
+                        <select class="form-select" name="gender" required>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Nombres</label>
+                        <input type="text" class="form-control" name="first_name" required placeholder="Nombres del paciente">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Apellidos</label>
+                        <input type="text" class="form-control" name="last_name" required placeholder="Apellidos del paciente">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" name="birth_date" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Teléfono de contacto</label>
+                        <input type="text" class="form-control" name="phone" placeholder="Ej: 04121234567">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Correo Electrónico</label>
+                        <input type="email" class="form-control" name="email" placeholder="Ej: paciente@correo.com">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label text-muted small fw-medium">Dirección de Habitación</label>
+                        <textarea class="form-control" name="address" rows="2" placeholder="Ej: Urb. Las Mercedes, Calle 2..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Sección Representante (Se muestra sólo si es menor) -->
+                <div id="representativeSection" style="display: none;">
+                    <h5 class="fw-medium text-primary-accent mb-4 border-bottom pb-2 mt-5">
+                        <i class="fa-solid fa-users me-2"></i> Datos del Representante
+                    </h5>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-medium">Cédula del Representante</label>
+                            <input type="text" class="form-control" name="rep_cedula" id="repCedulaInput" placeholder="Ej: V-12345678">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-medium">Teléfono del Representante</label>
+                            <input type="text" class="form-control" name="rep_phone" placeholder="Ej: 04147654321">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-medium">Nombres del Representante</label>
+                            <input type="text" class="form-control" name="rep_first_name" placeholder="Nombres">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-medium">Apellidos del Representante</label>
+                            <input type="text" class="form-control" name="rep_last_name" placeholder="Apellidos">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label text-muted small fw-medium">Correo del Representante</label>
+                            <input type="email" class="form-control" name="rep_email" placeholder="Ej: representante@correo.com">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-5 border-top pt-4">
+                    <button type="submit" class="btn btn-primary-accent btn-lg px-5 rounded-pill shadow-sm">Registrar Paciente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const isMinorSwitch = document.getElementById('isMinorSwitch');
+        const cedulaContainer = document.getElementById('cedulaContainer');
+        const cedulaInput = document.getElementById('cedulaInput');
+        const representativeSection = document.getElementById('representativeSection');
+        const repCedulaInput = document.getElementById('repCedulaInput');
+
+        isMinorSwitch.addEventListener('change', function() {
+            if (this.checked) {
+                // Patient is minor
+                cedulaContainer.style.display = 'none';
+                cedulaInput.removeAttribute('required');
+                representativeSection.style.display = 'block';
+                
+                // Make representative fields required
+                repCedulaInput.setAttribute('required', 'required');
+                representativeSection.querySelectorAll('input[name^="rep_"]').forEach(input => {
+                    if (input.name !== 'rep_email' && input.name !== 'rep_phone') {
+                        input.setAttribute('required', 'required');
+                    }
+                });
+            } else {
+                // Patient is adult
+                cedulaContainer.style.display = 'block';
+                cedulaInput.setAttribute('required', 'required');
+                representativeSection.style.display = 'none';
+                
+                // Clear and make representative fields optional
+                representativeSection.querySelectorAll('input').forEach(input => {
+                    input.removeAttribute('required');
+                });
+            }
+        });
+    });
+</script>
+<style>
+    .form-switch.form-switch-lg .form-check-input {
+        height: 1.5rem;
+        width: 2.75rem;
+        border-radius: 2rem;
+    }
+</style>
+{% endblock %}
