@@ -89,9 +89,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-sidebar .sidebar-header {
-    padding: 25px 20px;
+    padding: 20px 15px;
     background: rgba(0,0,0,0.05);
     border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 120px;
 }
 
 .glass-sidebar .sidebar-header h3 {
