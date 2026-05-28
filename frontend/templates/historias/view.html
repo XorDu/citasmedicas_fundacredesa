@@ -5,6 +5,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold mb-0">Detalles de Historia Médica #{{ history.id }}</h2>
         <div>
+            <a href="{{ url_for('historias.edit', id=history.id) }}" class="btn btn-outline-primary rounded-pill me-2"><i class="fa-solid fa-pen-to-square me-2"></i>Editar Historia</a>
             <a href="{{ url_for('historias.generate_pdf', id=history.id) }}" class="btn btn-primary-accent rounded-pill me-2"><i class="fa-solid fa-file-pdf me-2"></i>Descargar PDF</a>
             <a href="{{ url_for('historias.index') }}" class="btn btn-outline-secondary rounded-pill"><i class="fa-solid fa-arrow-left me-2"></i>Volver</a>
         </div>
