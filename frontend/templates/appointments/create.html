@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid max-w-4xl mx-auto" style="max-width: 800px;">
+    <div class="card glass-card border-0 mb-4">
+        <div class="card-body p-5">
+            <h3 class="fw-bold text-dark mb-1">Agendar Nueva Cita</h3>
+            <p class="text-muted mb-4">Complete los datos del paciente para asignar un turno.</p>
+
+            <form method="POST" id="appointmentForm">
+                <!-- Sección Paciente -->
+                <h5 class="fw-medium text-primary-accent mb-3 border-bottom pb-2"><i class="fa-solid fa-user me-2"></i> Datos del Paciente</h5>
+                
+                <div class="mb-4">
+                    <div class="form-check form-switch form-switch-lg mb-3">
+                        <input class="form-check-input" type="checkbox" id="isMinorSwitch" name="is_minor" value="true">
+                        <label class="form-check-label fw-medium ms-2" for="isMinorSwitch">El paciente es menor de edad sin cédula</label>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6" id="cedulaContainer">
+                        <label class="form-label text-muted small fw-medium">Cédula de Identidad</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="cedula" id="cedulaInput" placeholder="Ej: 12345678">
+                            <button class="btn btn-outline-secondary" type="button" id="btnSearchCedula"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="minorSelectContainer" style="display: none;">
+                        <label class="form-label text-muted small fw-medium">Seleccionar Menor Representado</label>
+                        <select class="form-select" name="selected_minor_id" id="minorSelect">
+                            <option value="">Seleccione un niño...</option>
+                        </select>
+                        <div class="form-text text-primary-accent small mt-1" style="cursor: pointer;" id="btnAddNewMinor">
+                            <i class="fa-solid fa-plus"></i> Registrar nuevo niño para este representante
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4" id="patientBasicData">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Nombres</label>
+                        <input type="text" class="form-control" name="first_name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Apellidos</label>
+                        <input type="text" class="form-control" name="last_name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" name="birth_date" required>
+                    </div>
+                </div>
+
+                <!-- Sección Cita -->
+                <h5 class="fw-medium text-primary-accent mb-3 mt-5 border-bottom pb-2"><i class="fa-regular fa-calendar-check me-2"></i> Detalles de la Cita</h5>
+                
+                <div class="row g-3">
+                    {% if current_user.role == 'superadmin' %}
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted small fw-medium">Especialidad (Modo Admin)</label>
+                        <select class="form-select" name="specialty_id" required>
+                            {% for sp in specialties %}
+                            <option value="{{ sp.id }}">{{ sp.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Fecha de Cita</label>
+                        <input type="date" class="form-control" name="appointment_date" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Hora</label>
+                        <input type="time" class="form-control" name="appointment_time" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Tipo de Consulta</label>
+                        <select class="form-select" name="type">
+                            <option value="General">General</option>
+                            <option value="Seguimiento">Seguimiento</option>
+                            <option value="Evaluación">Evaluación</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-medium">Consultorio / Sala</label>
+                        <input type="text" class="form-control" name="room" placeholder="Ej: Consultorio 3">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-5">
+                    <a href="{{ url_for('calendar.index') }}" class="btn btn-light me-3 px-4 rounded-pill">Cancelar</a>
+                    <button type="submit" class="btn btn-primary-accent px-5 rounded-pill shadow-sm">Guardar Cita</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const isMinorSwitch = document.getElementById('isMinorSwitch');
+        const btnSearchCedula = document.getElementById('btnSearchCedula');
+        const cedulaInput = document.getElementById('cedulaInput');
+        const cedulaContainer = document.getElementById('cedulaContainer');
+        const minorSelectContainer = document.getElementById('minorSelectContainer');
+        const patientBasicData = document.getElementById('patientBasicData');
+        const minorSelect = document.getElementById('minorSelect');
+
+        isMinorSwitch.addEventListener('change', function() {
+            if(this.checked) {
+                // Es menor. La cédula a buscar será la del representante.
+                cedulaContainer.querySelector('label').innerText = 'Cédula del Representante';
+            } else {
+                cedulaContainer.querySelector('label').innerText = 'Cédula de Identidad';
+                minorSelectContainer.style.display = 'none';
+                patientBasicData.style.display = 'flex'; // Reset view
+            }
+        });
+
+        btnSearchCedula.addEventListener('click', function() {
+            const cedula = cedulaInput.value;
+            if(!cedula) return;
+
+            fetch(`/patients/api/search_representative?cedula=${cedula}`)
+                .then(r => r.json())
+                .then(data => {
+                    if(data.found) {
+                        if(isMinorSwitch.checked && data.minors) {
+                            // Mostrar dropdown de menores
+                            minorSelect.innerHTML = '<option value="">Seleccione un niño...</option>';
+                            data.minors.forEach(m => {
+                                minorSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+                            });
+                            minorSelectContainer.style.display = 'block';
+                            patientBasicData.style.display = 'none'; // Ocultamos forms básicos hasta que seleccione "nuevo niño"
+                        } else if(!isMinorSwitch.checked && data.is_direct_patient) {
+                            alert("Paciente encontrado: " + data.patient.name);
+                            // Auto-fill fields if needed in a real app
+                        }
+                    } else {
+                        alert("Cédula no encontrada. Por favor proceda a registrar los datos.");
+                        minorSelectContainer.style.display = 'none';
+                        patientBasicData.style.display = 'flex';
+                    }
+                });
+        });
+        
+        document.getElementById('btnAddNewMinor').addEventListener('click', function(){
+            patientBasicData.style.display = 'flex';
+            // Clear inputs for new entry
+            patientBasicData.querySelectorAll('input').forEach(i => i.value = '');
+        });
+    });
+</script>
+<style>
+    .form-switch.form-switch-lg .form-check-input {
+        height: 1.5rem;
+        width: 2.75rem;
+        border-radius: 2rem;
+    }
+</style>
+{% endblock %}
