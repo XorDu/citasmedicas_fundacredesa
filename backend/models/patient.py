@@ -26,6 +26,8 @@ class Patient(db.Model):
     birth_date = db.Column(db.Date, nullable=False)
     gender = db.Column(db.String(10))
     phone = db.Column(db.String(20))
+    email = db.Column(db.String(100))
+    address = db.Column(db.String(255))
     is_minor = db.Column(db.Boolean, default=False)
     representative_id = db.Column(db.Integer, db.ForeignKey('representatives.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
