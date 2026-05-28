@@ -1,0 +1,180 @@
+:root {
+    /* Paleta Fundacredesa: Naranjas y marrones basados en las imágenes */
+    --primary-color: #e67e22; /* Naranja intenso base */
+    --secondary-color: #d35400; /* Naranja oscuro / Marrón */
+    --accent-color: #f39c12; /* Naranja claro / Amarillo oscuro */
+    --bg-color: #fdf6e3; /* Fondo crema muy suave */
+    --text-color: #4a3b32; /* Marrón oscuro para el texto (no negro) */
+    --light-text: #ffffff;
+    --danger-color: #c0392b;
+    --success-color: #27ae60;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(230, 126, 34, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(230, 126, 34, 0.1);
+    
+    /* Variables de la UI de las fotos */
+    --header-bg: #d35400;
+    --header-text: #ffffff;
+    --sidebar-bg: #e67e22;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(135deg, var(--bg-color) 0%, #fae5d3 100%);
+    color: var(--text-color);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Classes */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: var(--glass-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px 0 rgba(230, 126, 34, 0.15);
+}
+
+/* Navbar top style to match screenshots */
+.navbar-glass {
+    background: #fdf6e3;
+    border-bottom: 3px solid var(--primary-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 0;
+    margin-bottom: 20px !important;
+}
+
+.btn-primary-accent {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-accent:hover {
+    background-color: var(--secondary-color);
+    color: var(--light-text);
+}
+
+.text-primary-accent {
+    color: var(--secondary-color) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(230, 126, 34, 0.25);
+}
+
+/* Sidebar Specifics to match the orange screenshot */
+.glass-sidebar {
+    min-width: 260px;
+    max-width: 260px;
+    background: var(--sidebar-bg);
+    color: var(--light-text);
+    transition: all 0.3s;
+    height: 100vh;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+}
+
+.glass-sidebar .sidebar-header {
+    padding: 25px 20px;
+    background: rgba(0,0,0,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.glass-sidebar .sidebar-header h3 {
+    color: var(--light-text);
+    font-size: 1.4rem;
+}
+.glass-sidebar .sidebar-header i {
+    color: var(--light-text) !important;
+}
+
+.glass-sidebar ul p {
+    padding: 10px;
+}
+
+.glass-sidebar ul li a {
+    padding: 15px 20px;
+    font-size: 1.05em;
+    display: block;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+    border-left: 4px solid transparent;
+}
+
+.glass-sidebar ul li a i {
+    width: 25px;
+    text-align: center;
+}
+
+.glass-sidebar ul li a:hover, .glass-sidebar ul li.active > a {
+    color: var(--light-text);
+    background: rgba(0,0,0,0.1);
+    border-left: 4px solid var(--light-text);
+}
+
+#sidebar.active {
+    margin-left: -260px;
+}
+
+/* Action Boxes from the screenshots */
+.action-box {
+    background: white;
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    color: var(--secondary-color);
+    transition: all 0.3s;
+    text-decoration: none;
+    display: block;
+    font-weight: 600;
+}
+
+.action-box i {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.action-box:hover {
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+}
+
+.action-box:hover i {
+    color: white;
+}
+
+/* Custom UI blocks from screenshot (like 'Citas de Hoy', 'Historias', etc.) */
+.ui-block-header {
+    background: var(--secondary-color);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px 8px 0 0;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+.ui-block-body {
+    background: white;
+    padding: 15px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+}
