@@ -8,9 +8,18 @@ patients_bp = Blueprint('patients', __name__, url_prefix='/patients')
 @patients_bp.route('/')
 @login_required
 def index():
-    # Simple list logic for now
-    patients = Patient.query.limit(50).all()
-    return render_template('patients/list.html', patients=patients)
+    query = request.args.get('q', '')
+    if query:
+        patients = Patient.query.filter(
+            db.or_(
+                Patient.cedula.contains(query),
+                Patient.first_name.ilike(f'%{query}%'),
+                Patient.last_name.ilike(f'%{query}%')
+            )
+        ).all()
+    else:
+        patients = Patient.query.all()
+    return render_template('patients/list.html', patients=patients, query=query)
 
 @patients_bp.route('/api/search_representative')
 @login_required
