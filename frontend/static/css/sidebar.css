@@ -1,0 +1,49 @@
+/* Sidebar styles */
+.sidebar {
+    background-color: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    height: 100vh;
+    padding-top: 20px;
+}
+
+.sidebar .sidebar-header {
+    padding: 20px;
+    background: transparent;
+    text-align: center;
+}
+
+.sidebar .sidebar-header img.logo-img {
+    max-width: 80%;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.sidebar ul.components {
+    padding: 20px 0;
+}
+
+.sidebar ul li a {
+    padding: 12px 20px;
+    font-size: 1.1em;
+    display: block;
+    color: var(--text-color);
+    font-weight: 500;
+    transition: all 0.3s;
+    border-radius: 0 30px 30px 0;
+    margin-right: 20px;
+    margin-bottom: 5px;
+}
+
+.sidebar ul li a:hover, .sidebar ul li.active > a {
+    color: var(--primary-color);
+    background: rgba(230, 126, 34, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.sidebar ul li a i {
+    width: 25px;
+    text-align: center;
+}
