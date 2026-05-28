@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid max-w-4xl mx-auto" style="max-width: 900px;">
+<div class="container-fluid max-w-4xl mx-auto mb-5" style="max-width: 900px;">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold mb-0">Detalles de Historia Médica #{{ history.id }}</h2>
         <div>
@@ -10,42 +10,209 @@
         </div>
     </div>
 
-    <div class="card glass-card border-0 mb-4">
-        <div class="card-header ui-block-header d-flex justify-content-between">
-            <span>Paciente: {{ history.patient.first_name }} {{ history.patient.last_name }}</span>
-            <span>Cédula: {{ history.patient.cedula }}</span>
+    <div class="card glass-card border-0 mb-4 shadow-sm">
+        <div class="card-header ui-block-header bg-white border-bottom">
+            <h4 class="mb-0 text-center fw-bold">HISTORIA MÉDICA</h4>
         </div>
-        <div class="card-body p-4">
+        <div class="card-body p-4 p-md-5">
             
-            <h5 class="text-primary-accent border-bottom pb-2 mb-3"><i class="fa-solid fa-address-card me-2"></i> Información General</h5>
             <div class="row g-3 mb-4">
-                <div class="col-md-4"><strong>Relación Laboral:</strong> <span class="text-muted">{{ history.relacion_laboral or 'N/A' }}</span></div>
-                <div class="col-md-4"><strong>Estado Civil:</strong> <span class="text-muted">{{ history.estado_civil or 'N/A' }}</span></div>
-                <div class="col-md-4"><strong>Ocupación:</strong> <span class="text-muted">{{ history.ocupacion or 'N/A' }}</span></div>
-                <div class="col-md-4"><strong>Nacionalidad:</strong> <span class="text-muted">{{ history.nacionalidad or 'N/A' }}</span></div>
-                <div class="col-md-4"><strong>Tipo de Sangre:</strong> <span class="text-muted">{{ history.tipo_sangre or 'N/A' }}</span></div>
-                <div class="col-md-4"><strong>Médico Tratante:</strong> <span class="text-muted">{{ history.doctor.full_name }}</span></div>
+                <div class="col-md-6">
+                    <strong>Relación laboral:</strong> <span class="text-muted">{{ history.relacion_laboral or 'N/A' }}</span>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <strong>Médico Tratante:</strong> <span class="text-muted">{{ history.doctor.full_name }}</span>
+                </div>
             </div>
 
-            <h5 class="text-primary-accent border-bottom pb-2 mb-3"><i class="fa-solid fa-stethoscope me-2"></i> Consulta</h5>
-            <div class="mb-4">
-                <strong>Motivo de Consulta:</strong>
-                <p class="text-muted">{{ history.motivo_consulta or 'N/A' }}</p>
-                <strong>Enfermedad Actual:</strong>
-                <p class="text-muted">{{ history.enfermedad_actual or 'N/A' }}</p>
+            <table class="table table-sm table-bordered">
+                <tbody>
+                    <tr>
+                        <td width="20%"><strong>Fecha:</strong></td>
+                        <td width="30%">{{ history.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td width="20%"><strong>N° cédula:</strong></td>
+                        <td width="30%">{{ history.patient.cedula }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nombre del paciente:</strong></td>
+                        <td colspan="3">{{ history.patient.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Apellidos del paciente:</strong></td>
+                        <td colspan="3">{{ history.patient.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Edad:</strong></td>
+                        <td>{{ (history.created_at.date() - history.patient.birth_date).days // 365 if history.patient.birth_date else 'N/A' }}</td>
+                        <td><strong>Sexo:</strong></td>
+                        <td>{{ history.patient.gender }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fecha de nacimiento:</strong></td>
+                        <td>{{ history.patient.birth_date.strftime('%d/%m/%Y') if history.patient.birth_date else 'N/A' }}</td>
+                        <td><strong>Estado civil:</strong></td>
+                        <td>{{ history.estado_civil or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ocupación:</strong></td>
+                        <td colspan="3">{{ history.ocupacion or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nacionalidad:</strong></td>
+                        <td colspan="3">{{ history.nacionalidad or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tipo de sangre:</strong></td>
+                        <td colspan="3">{{ history.tipo_sangre or 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Teléfono:</strong></td>
+                        <td colspan="3">{{ history.patient.phone }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Correo electrónico:</strong></td>
+                        <td colspan="3">{{ history.patient.email }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Observaciones:</strong></td>
+                        <td colspan="3">{{ history.observaciones or 'N/A' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h5 class="fw-bold mt-5 mb-2">Motivo de consulta:</h5>
+            <div class="p-3 bg-light border rounded">{{ history.motivo_consulta or 'N/A' }}</div>
+
+            <h5 class="fw-bold mt-4 mb-2">Enfermedad actual:</h5>
+            <div class="p-3 bg-light border rounded">{{ history.enfermedad_actual or 'N/A' }}</div>
+
+            <h5 class="fw-bold mt-4 mb-2">Antecedentes personales:</h5>
+            <div class="p-3 bg-light border rounded">{{ history.antecedentes_personales or 'N/A' }}</div>
+
+            <!-- Hábitos -->
+            <div class="row g-4 mt-2 mb-4">
+                <div class="col-md-6">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Hábitos tóxicos</th>
+                                <th class="text-center">Positivo</th>
+                                <th class="text-center">Negativo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for habito in ['Alcohol', 'Tabaco', 'Drogas', 'Infusiones', 'Actividad física'] %}
+                            <tr>
+                                <td>{{ habito }}:</td>
+                                <td class="text-center">{% if history.habitos_toxicos and history.habitos_toxicos.get(habito) == 'Positivo' %}<i class="fa-solid fa-check text-success"></i>{% endif %}</td>
+                                <td class="text-center">{% if history.habitos_toxicos and history.habitos_toxicos.get(habito) == 'Negativo' %}<i class="fa-solid fa-check text-success"></i>{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Hábitos fisiológicos</th>
+                                <th class="text-center">Positivo</th>
+                                <th class="text-center">Negativo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for habito in ['Alimentación', 'Diuresis', 'Sueño', 'Alergias', 'Otros'] %}
+                            <tr>
+                                <td>{{ habito }}:</td>
+                                <td class="text-center">{% if history.habitos_fisiologicos and history.habitos_fisiologicos.get(habito) == 'Positivo' %}<i class="fa-solid fa-check text-success"></i>{% endif %}</td>
+                                <td class="text-center">{% if history.habitos_fisiologicos and history.habitos_fisiologicos.get(habito) == 'Negativo' %}<i class="fa-solid fa-check text-success"></i>{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <h5 class="text-primary-accent border-bottom pb-2 mb-3"><i class="fa-solid fa-file-medical-o me-2"></i> Evaluación Final</h5>
-            <div class="mb-4">
-                <strong>Diagnóstico:</strong>
-                <p class="text-muted">{{ history.diagnostico or 'N/A' }}</p>
-                <strong>Tratamiento:</strong>
-                <p class="text-muted">{{ history.tratamiento or 'N/A' }}</p>
+            <h5 class="fw-bold mt-4 mb-2">Enfermedades de la infancia:</h5>
+            <div class="p-3 bg-light border rounded">{{ history.enfermedades_infancia or 'N/A' }}</div>
+            
+            <h5 class="fw-bold mt-4 mb-2">Antecedentes familiares:</h5>
+            <div class="p-3 bg-light border rounded">{{ history.antecedentes_familiares or 'N/A' }}</div>
+
+            <h5 class="fw-bold mt-4 mb-2">Cirugías y hospitalizaciones:</h5>
+            <div class="p-3 bg-light border rounded">{{ history.cirugias_hospitalizaciones or 'N/A' }}</div>
+
+            <!-- Examen Físico -->
+            <h5 class="fw-bold mt-5 mb-3 fs-5 bg-light p-2 border-start border-4 border-warning">Examen físico:</h5>
+            
+            <div class="row g-3 mb-4">
+                {% for ef in ['TA', 'FC', 'FR', 'Temperatura', 'Peso', 'Altura', 'IMC'] %}
+                <div class="col-md-3 col-sm-4">
+                    <strong>{{ ef }}:</strong> <span class="text-muted">{{ history.examen_fisico.get(ef, 'N/A') if history.examen_fisico else 'N/A' }}</span>
+                </div>
+                {% endfor %}
             </div>
 
-            <div class="d-flex justify-content-end mt-4">
-                <a href="{{ url_for('historias.edit', id=history.id) }}" class="btn btn-outline-primary rounded-pill"><i class="fa-solid fa-pen me-2"></i>Editar Historia</a>
+            <h6 class="fw-bold mb-2 mt-4">Impresión general:</h6>
+            <div class="row g-2 mb-4 text-muted">
+                {% for ig in ['Constitución', 'Facies', 'Actitud', 'Decúbito', 'Marcha'] %}
+                <div class="col-md-4"><strong>{{ ig }}:</strong> {{ history.impresion_general.get(ig, 'N/A') if history.impresion_general else 'N/A' }}</div>
+                {% endfor %}
             </div>
+
+            <h6 class="fw-bold mb-2 mt-4">Piel, faneras y tejido celular subcutáneo:</h6>
+            <div class="row g-2 mb-4 text-muted">
+                {% for pf in ['Aspecto', 'Distribución pilosa', 'Lesiones', 'Faneras', 'Tejido celular subcutáneo'] %}
+                <div class="col-md-4"><strong>{{ pf }}:</strong> {{ history.piel_tejido.get(pf, 'N/A') if history.piel_tejido else 'N/A' }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Sistemas -->
+            <div class="row g-4 mb-4 mt-2">
+                <div class="col-md-6 border-end">
+                    <h6 class="fw-bold mb-2">Respiratorio:</h6>
+                    <ul class="list-unstyled text-muted ms-3">
+                        {% for item in ['Inspección', 'Palpación', 'Percusión', 'Auscultación'] %}
+                        <li><strong>{{ item }}:</strong> {{ history.respiratorio.get(item, 'N/A') if history.respiratorio else 'N/A' }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold mb-2">Cardiovascular:</h6>
+                    <ul class="list-unstyled text-muted ms-3">
+                        {% for item in ['Inspección', 'Palpación', 'Auscultación', 'Pulsos'] %}
+                        <li><strong>{{ item }}:</strong> {{ history.cardiovascular.get(item, 'N/A') if history.cardiovascular else 'N/A' }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-6 border-end">
+                    <h6 class="fw-bold mb-2">Abdomen:</h6>
+                    <ul class="list-unstyled text-muted ms-3">
+                        {% for item in ['Inspección', 'Palpación', 'Percusión', 'Auscultación'] %}
+                        <li><strong>{{ item }}:</strong> {{ history.abdomen.get(item, 'N/A') if history.abdomen else 'N/A' }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold mb-2">Neurológico:</h6>
+                    <ul class="list-unstyled text-muted ms-3">
+                        {% for item in ['Glasgow', 'Motilidad Activa', 'Motilidad Pasiva', 'Motilidad Refleja', 'Pares Craneales', 'Sensibilidad'] %}
+                        <li><strong>{{ item }}:</strong> {{ history.neurologico.get(item, 'N/A') if history.neurologico else 'N/A' }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Final -->
+            <h5 class="fw-bold mt-5 mb-2">Diagnóstico:</h5>
+            <div class="p-3 bg-light border rounded">{{ history.diagnostico or 'N/A' }}</div>
+            
+            <h5 class="fw-bold mt-4 mb-2">Exámenes complementarios:</h5>
+            <div class="p-3 bg-light border rounded">{{ history.examenes_complementarios or 'N/A' }}</div>
+            
+            <h5 class="fw-bold mt-4 mb-2">Tratamiento:</h5>
+            <div class="p-3 bg-light border rounded">{{ history.tratamiento or 'N/A' }}</div>
+
         </div>
     </div>
 </div>
